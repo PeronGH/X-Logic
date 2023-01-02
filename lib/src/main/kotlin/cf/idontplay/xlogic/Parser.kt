@@ -5,7 +5,7 @@ package cf.idontplay.xlogic
 
 import java.util.*
 
-fun parse(input: String): ASTNode {
+internal fun parse(input: String): ASTNode {
     val expression = preprocess(input)
     val rpn = convertToRPN(expression)
     return parseRPN(rpn)
