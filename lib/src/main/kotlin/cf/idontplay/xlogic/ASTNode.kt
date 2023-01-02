@@ -101,6 +101,16 @@ internal class Literal(val value: Boolean) : Operand() {
     override fun toString() = if (value) "⊤" else "⊥"
 }
 
+internal infix fun ASTNode.and(rhs: ASTNode) = And(this, rhs)
+
+internal infix fun ASTNode.or(rhs: ASTNode) = Or(this, rhs)
+
+internal infix fun ASTNode.equiv(rhs: ASTNode) = Equiv(this, rhs)
+
+internal infix fun ASTNode.implies(rhs: ASTNode) = Implies(this, rhs)
+
+internal fun ASTNode.not() = Not(this)
+
 // tests
 fun main() {
     // test case 1
@@ -121,4 +131,7 @@ fun main() {
     println(ast2.toFinalString())
     println(ast2.evaluate(mapOf('p' to true, 'q' to false, 'r' to true, 's' to false)))
     println(ast2.getVariables())
+
+    val ast3 = (p.not() or q) equiv (p and r implies s)
+    println(ast3.toFinalString())
 }
