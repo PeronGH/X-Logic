@@ -18,6 +18,7 @@ private fun preprocess(input: String) = input
     .replace("or|\\|".toRegex(), " ∨ ")
     .replace("and|&".toRegex(), " ∧ ")
     .replace("not|!|~|-".toRegex(), "¬")
+    .replace("¬¬", "")
     .trim()
 
 // Token Helpers
@@ -127,7 +128,7 @@ private fun parseRPN(tokens: List<Token>): ASTNode {
 // tests
 fun main() {
     // preprocess
-    val expr = preprocess("not a or b")
+    val expr = preprocess("not (not not a or b)")
     println(expr)
 
     val expr2 = preprocess("a & b | c")
@@ -155,8 +156,4 @@ fun main() {
 
     val ast3 = parseRPN(rpn3)
     println(ast3.toFinalString())
-
-    // final
-    val final = parse("not a or b")
-    println(final.toFinalString())
 }
