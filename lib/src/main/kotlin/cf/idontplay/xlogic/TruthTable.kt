@@ -73,5 +73,6 @@ class TruthTable(private val expression: String) {
 }
 
 fun main() {
-    println(TruthTable("!a | b = a -> b"))
+    println("Enter an expression:")
+    println(TruthTable(readln()))
 }
