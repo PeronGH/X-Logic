@@ -3,6 +3,8 @@ package cf.idontplay.xlogic
 internal sealed class ASTNode {
     abstract fun evaluate(assignments: Map<Char, Boolean>): Boolean
 
+    abstract fun clone(): ASTNode
+
     abstract override fun toString(): String
 
     override fun equals(other: Any?) = this.toString() == other.toString()
@@ -37,12 +39,16 @@ internal class And(lhs: ASTNode, rhs: ASTNode) : BinaryOperator(lhs, rhs) {
     override fun evaluate(assignments: Map<Char, Boolean>) =
         lhs.evaluate(assignments) && rhs.evaluate(assignments)
 
+    override fun clone() = And(lhs.clone(), rhs.clone())
+
     override fun toString() = "($lhs ∧ $rhs)"
 }
 
 internal class Or(lhs: ASTNode, rhs: ASTNode) : BinaryOperator(lhs, rhs) {
     override fun evaluate(assignments: Map<Char, Boolean>) =
         lhs.evaluate(assignments) || rhs.evaluate(assignments)
+
+    override fun clone() = Or(lhs.clone(), rhs.clone())
 
     override fun toString() = "($lhs ∨ $rhs)"
 }
@@ -51,12 +57,16 @@ internal class Equiv(lhs: ASTNode, rhs: ASTNode) : BinaryOperator(lhs, rhs) {
     override fun evaluate(assignments: Map<Char, Boolean>) =
         lhs.evaluate(assignments) == rhs.evaluate(assignments)
 
+    override fun clone() = Equiv(lhs.clone(), rhs.clone())
+
     override fun toString() = "($lhs ≡ $rhs)"
 }
 
 internal class Implies(lhs: ASTNode, rhs: ASTNode) : BinaryOperator(lhs, rhs) {
     override fun evaluate(assignments: Map<Char, Boolean>) =
         !lhs.evaluate(assignments) || rhs.evaluate(assignments)
+
+    override fun clone() = Implies(lhs.clone(), rhs.clone())
 
     override fun toString() = "($lhs → $rhs)"
 }
@@ -67,6 +77,8 @@ internal class Not(operand: ASTNode) : UnaryOperator(operand) {
     override fun evaluate(assignments: Map<Char, Boolean>) =
         !operand.evaluate(assignments)
 
+    override fun clone() = Not(operand.clone())
+
     override fun toString() = "¬$operand"
 }
 
@@ -76,11 +88,15 @@ internal class Variable(val name: Char) : Operand() {
     override fun evaluate(assignments: Map<Char, Boolean>) =
         assignments[name] ?: throw IllegalArgumentException("Variable $name is not assigned")
 
+    override fun clone() = this
+
     override fun toString() = name.toString()
 }
 
 internal class Literal(val value: Boolean) : Operand() {
     override fun evaluate(assignments: Map<Char, Boolean>) = value
+
+    override fun clone() = this
 
     override fun toString() = if (value) "⊤" else "⊥"
 }
