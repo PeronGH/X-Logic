@@ -23,36 +23,52 @@ class TruthTable(private val expression: String) {
     }.flatten().chunked(variables.size + 1).toList()
 
     // generate the table with alignment and border
-    override fun toString():String {
+    override fun toString(): String {
+        val result = StringBuilder()
+
+        // calculate the width of each column
         val columnWidths = sequence {
             for (i in header.indices) {
-                yield(rows.maxOfOrNull { it[i].toString().length } ?: 0)
+                yield(
+                    sequenceOf(
+                        header[i].length,
+                        *rows.map { it[i].toString().length }.toTypedArray()
+                    )
+                        .maxOrNull()!!
+                )
             }
         }.toList()
 
-        val headerString = sequence {
-            for (i in header.indices) {
-                yield(header[i].padEnd(columnWidths[i]))
-            }
-        }.joinToString(" | ")
+        // generate the header
+        result.appendLine(
+            sequence {
+                for (i in header.indices) {
+                    yield(header[i].padStart(columnWidths[i]))
+                }
+            }.joinToString(" | ")
+        )
 
-        val rowsString = sequence {
-            for (row in rows) {
-                yield(sequence {
+        // generate the border
+        result.appendLine(
+            sequence {
+                for (i in header.indices) {
+                    yield("-".repeat(columnWidths[i]))
+                }
+            }.joinToString("-+-")
+        )
+
+        // generate the rows
+        for (row in rows) {
+            result.appendLine(
+                sequence {
                     for (i in row.indices) {
-                        yield(row[i].toString().padEnd(columnWidths[i]))
+                        yield(row[i].toString().padStart(columnWidths[i]))
                     }
-                }.joinToString(" | "))
-            }
-        }.joinToString("\n")
+                }.joinToString(" | ")
+            )
+        }
 
-        val border = sequence {
-            for (i in header.indices) {
-                yield("-".repeat(columnWidths[i]))
-            }
-        }.joinToString("-+-")
-
-        return "$headerString\n$border\n$rowsString"
+        return result.toString()
     }
 }
 
